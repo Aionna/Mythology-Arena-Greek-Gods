@@ -143,6 +143,7 @@
             box-shadow: 0 4px 0 #2980b9;
             padding: 15px;
             font-size: 1.1em;
+            text-transform: capitalize;
         }
 
         .option-btn:hover {
@@ -187,11 +188,6 @@
             margin: 10px 0;
         }
 
-         .stats p {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -221,6 +217,81 @@
                 transform: scale(1.3);
             }
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .game-screen {
+                padding: 20px;
+                border: 4px solid #0f3460;
+            }
+
+            h1 {
+                font-size: 2em;
+                text-shadow: 2px 2px 0 #c0392b;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .god-sprite {
+                width: 80px;
+                height: 80px;
+                font-size: 3em;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1.1em;
+                box-shadow: 0 4px 0 #c0392b;
+            }
+
+            .btn:hover {
+                top: 2px;
+                box-shadow: 0 2px 0 #a93226;
+            }
+
+            .question {
+                font-size: 1.1em;
+                padding: 15px;
+                min-height: 80px;
+            }
+
+            .option-btn {
+                font-size: 0.95em;
+                padding: 12px;
+            }
+
+            .score-display {
+                font-size: 2em;
+            }
+
+            .final-message {
+                font-size: 1.1em;
+            }
+
+            .stats p {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .btn {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+
+            .question {
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -235,8 +306,8 @@
                 <h1>MYTHOLOGY ARENA</h1>
                 <p class="subtitle">Greek Gods Edition</p>
                 <div class="god-sprite">⚡</div>
-                <p style="margin: 20px 0; font-size: 1.2em;">Test your knowledge of the Twelve Sassy Olympians!</p>
-                <p style="margin: 20px 0;">Answer 5 random questions from a pool of 10</p>
+                <p style="margin: 20px 0; font-size: 1.2em;">Test your knowledge of the Sassy Olympians!</p>
+                <p style="margin: 20px 0;">Answer 5 random questions from a pool of 15</p>
                 <button class="btn" onclick="startQuiz()">PRESS START</button>
             </div>
 
@@ -264,7 +335,7 @@
                     Made with <span class="heart">❤️</span>
                 </a>
             </div>
-
+            
         </div>
     </div>
 
@@ -274,9 +345,9 @@
 
             { q: "Which god spent nine months chilling in Zeus's thigh before being born?", opts: ["Apollo, the golden boy", "Ares, the cosmic puncher", "Hermes, the winged rat", "Dionysus, the party animal"], ans: 3, sprite: "🍷" },
 
-            { q: "Who turned Medusa into a snake-head because she dared to exist in a temple?", opts: ["Athena, the 'it' girl or whatever", "Aphrodite, the jealous diva", "Hera, the vengeful lady of the manor", "Artemis, the 'no boys allowed' CEO"], ans: 0, sprite: "🐍" },
+            { q: "Who turned Medusa into a snake-head because she dared to exist in a temple?", opts: ["Athena, the  'it' girl...or whatever", "Aphrodite, the jealous diva", "Hera, the vengeful lady of the manor", "Artemis, the 'no boys allowed' CEO"], ans: 0, sprite: "🦉" },
 
-            { q: "Which god is actually the god of war, despite losing almost every fight he's ever been in?", opts: ["Zeus, the lightning flinger", "Ares, the glorified bully", "Poseidon, the salty sea-man", "Hercules, the gym rat"], ans: 1, sprite: "🏺" },
+            { q: "Which god is actually the god of war, despite losing almost every fight he's ever been in?", opts: ["Zeus, the lightning flinger", "Ares, the glorified bully", "Poseidon, the salty sea-man", "Hercules, the gym rat"], ans: 1, sprite: "🗡" },
 
             { q: "Who offered a Trojan prince a hot girl in exchange for a 'Most Beautiful' trophy?", opts: ["Athena, the nerd", "Hera, the power-hungry queen", "Aphrodite, the chaos-bringer", "Artemis, the feral twin"], ans: 2, sprite: "🍎" },
 
@@ -288,7 +359,41 @@
 
             { q: "Which goddess caused a global famine because her daughter went on a 'mandatory' date?", opts: ["Hera, the marriage gatekeeper", "Demeter, the dramatic gardener", "Athena, the tactical 'genius'", "Hestia, the come on baby light my fire"], ans: 1, sprite: "🌾" },
 
-            { q: "Which 'God of War' once spent 13 months trapped in a bronze jar like a forgotten pickle?",opts: ["Zeus, the lecherous sky daddy", "Ares, the glorified jar-filler", "Poseidon, the wet noodle", "Hades, the world's most stressed landlord"],  ans: 1, sprite: "🏺" }
+            { q: "Which 'God of War' once spent 13 months trapped in a bronze jar like a forgotten pickle?",opts: ["Zeus, the lecherous sky daddy", "Ares, the glorified jar-filler", "Poseidon, the wet noodle", "Hades, the world's most stressed landlord"],  ans: 1, sprite: "🗡" },
+
+            { q: "Which god is technically the father of Pegasus  despite being, you know, a human-shaped  god?", 
+  opts: ["Zeus, the pigeon lover", "Poseidon, the horse-obsessed weirdo", "Hades, the dog person", "Hermes, the winged shoe salesman"], 
+  ans: 1, 
+  sprite: "🐴" 
+},
+
+{ 
+  q: "Who is the only Olympian god who is actually 'working class' and has to build everyone's mansions?", 
+  opts: ["Ares, the gym bro", "Hephaestus, the  handyman", "Apollo, the part-time sun baby", "Dionysus, the permanent vacationer"], 
+  ans: 1, 
+  sprite: "🛠️" 
+},
+
+{ 
+  q: "Which goddess kidnapped a handsome shepherd and put him in a permanent coma just so she could look at him?", 
+  opts: ["Selene, the ultimate stage-five clinger", "Hera, the professional grudge-holder", "Aphrodite, the toxic relationship coach", "Athena, the 'I don't have feelings' girl"], 
+  ans: 0, 
+  sprite: "😴" 
+},
+
+{ 
+  q: "Who had to work a 9-to-5 as a mortal shepherd because he got grounded by Zeus for killing the Cyclopes?", 
+  opts: ["Hermes, the gig-economy god", "Poseidon, the angry wet sea god", "Apollo, the humbled pop star", "Hephaestus, the volcanic shut-in"], 
+  ans: 2, 
+  sprite: "🐑" 
+},
+
+{ 
+  q: "Which god is the reason we have 'the talk,' considering he's related to almost every hero in Greece?", 
+  opts: ["Hades, the king of social distancing", "Zeus, the man who never heard of a DNA test", "Ares, the god of punching things", "Poseidon, the horse-obsessed menace"], 
+  ans: 1, 
+  sprite: "🧬" 
+}
               
         ];
 
@@ -382,13 +487,13 @@
             if (percentage === 100) {
                 message = "LEGENDARY! You clearly spent your childhood reading scrolls while the rest of us were playing outside.";
             } else if (percentage >= 80) {
-                message = "EXCELLENT! You’ve got more brains than Athena!";
+                message = "EXCELLENT! You've got more brains than Athena!";
             } else if (percentage >= 60) {
-                message = "GOOD! You're the Hermes of this quiz: fast, but suspicious!";
+                message = "GOOD! You're the Hermes of this quiz: fast, and a tad suspicious!";
             } else if (percentage >= 40) {
-                message = "OOF. Even Pandora thinks you should have kept this score in the box.";
+                message = "OOF. Did you offend a goddess this morning?";
             } else {
-                message = "FATAL ERROR. You’ve been struck by Zeus' mini-bolt!";
+                message = "FATAL ERROR. You've been struck by Zeus' mini-bolt!";
             }
             
             document.getElementById('finalMessage').textContent = message;
