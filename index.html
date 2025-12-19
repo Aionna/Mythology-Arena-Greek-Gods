@@ -1,508 +1,263 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mythology Arena: Greek Gods</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='80'>⚔️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&amp;family=Outfit:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
         body {
-            font-family: 'Courier New', monospace;
-            background: #1a1a2e;
-            color: #eee;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
         }
 
-        .container {
-            max-width: 800px;
+        .game-container {
+            width: 100%;
+            height: 100dvh;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(0.5rem, 2vmin, 1.5rem);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 2s infinite ease-in-out; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        .header { text-align: center; padding: 0.5rem 0; }
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 5vmin, 2.2rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ffaa00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .screen { display: none; flex-direction: column; align-items: center; flex: 1; overflow-y: auto; padding-bottom: 20px; }
+        .screen.active { display: flex; }
+
+        .hero-icon { font-size: clamp(3rem, 12vmin, 5rem); margin: 1rem 0; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin: 0.5rem;
+        }
+        .btn-primary { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #1a1a2e; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4); }
+        .btn-next { background: linear-gradient(135deg, #00c9a7, #00a98f); color: #fff; width: 100%; margin-top: 1rem; }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
             width: 100%;
         }
 
-        .game-screen {
-            background: #16213e;
-            border: 8px solid #0f3460;
-            box-shadow: 0 0 0 4px #eee, 0 0 40px rgba(231, 76, 60, 0.5);
-            padding: 40px;
-            position: relative;
-        }
-
-        .pixel-corners {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #e74c3c;
-        }
-
-        .corner-tl { top: -4px; left: -4px; }
-        .corner-tr { top: -4px; right: -4px; }
-        .corner-bl { bottom: -4px; left: -4px; }
-        .corner-br { bottom: -4px; right: -4px; }
-
-        h1 {
-            text-align: center;
-            font-size: 3em;
-            color: #f39c12;
-            text-shadow: 4px 4px 0 #c0392b;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #3498db;
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 0 #000;
-        }
-
-        .start-screen, .quiz-screen, .result-screen {
-            text-align: center;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .god-sprite {
-            width: 120px;
-            height: 120px;
-            margin: 20px auto;
-            background: #0f3460;
-            border: 4px solid #eee;
-            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
-        }
-
-        .btn {
-            background: #e74c3c;
+        .answers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem; width: 100%; }
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1rem;
             color: #fff;
-            border: 4px solid #c0392b;
-            padding: 15px 40px;
-            font-size: 1.5em;
-            font-family: 'Courier New', monospace;
             cursor: pointer;
-            margin: 10px;
-            text-transform: uppercase;
-            box-shadow: 0 6px 0 #c0392b;
-            transition: all 0.1s;
-            position: relative;
-            top: 0;
+            font-size: 0.95rem;
+        }
+        .answer-btn.correct { background: #27ae60 !important; border-color: #2ecc71; }
+        .answer-btn.wrong { background: #e74c3c !important; border-color: #ff7675; }
+
+        .feedback-box {
+            background: rgba(15, 52, 96, 0.9);
+            border: 2px solid #f39c12;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: left;
+            width: 100%;
         }
 
-        .btn:hover {
-            background: #c0392b;
-            top: 2px;
-            box-shadow: 0 4px 0 #a93226;
-        }
+        /* RESTORED HEART STYLES */
+        .footer { text-align: center; padding: 1rem; }
+        .footer a { color: #3498db; text-decoration: none; font-size: 0.9rem; }
+        .heart { display: inline-block; animation: pulse 1.5s ease-in-out infinite; color: #ff6b6b; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
 
-        .btn:active {
-            top: 6px;
-            box-shadow: none;
-        }
-
-        .question-counter {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: #f39c12;
-        }
-
-        .question {
-            font-size: 1.5em;
-            margin: 30px 0;
-            padding: 20px;
-            background: #0f3460;
-            border: 4px solid #3498db;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .options {
-            display: grid;
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .option-btn {
-            background: #3498db;
-            border: 4px solid #2980b9;
-            box-shadow: 0 4px 0 #2980b9;
-            padding: 15px;
-            font-size: 1.1em;
-            text-transform: capitalize;
-        }
-
-        .option-btn:hover {
-            background: #2980b9;
-            box-shadow: 0 2px 0 #21618c;
-        }
-
-        .option-btn.correct {
-            background: #27ae60;
-            border-color: #229954;
-            box-shadow: 0 4px 0 #229954;
-        }
-
-        .option-btn.incorrect {
-            background: #e74c3c;
-            border-color: #c0392b;
-            box-shadow: 0 4px 0 #c0392b;
-        }
-
-        .score-display {
-            font-size: 3em;
-            color: #f39c12;
-            margin: 30px 0;
-            text-shadow: 3px 3px 0 #c0392b;
-        }
-
-        .final-message {
-            font-size: 1.5em;
-            margin: 20px 0;
-            color: #3498db;
-        }
-
-        .stats {
-            background: #0f3460;
-            border: 4px solid #3498db;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .stats p {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 1em;
-            color: #eee;
-        }
-
-        .footer a {
-            color: #3498db;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            color: #2980b9;
-        }
-
-        .heart {
-            display: inline-block;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.3);
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .game-screen {
-                padding: 20px;
-                border: 4px solid #0f3460;
-            }
-
-            h1 {
-                font-size: 2em;
-                text-shadow: 2px 2px 0 #c0392b;
-            }
-
-            .subtitle {
-                font-size: 1em;
-            }
-
-            .god-sprite {
-                width: 80px;
-                height: 80px;
-                font-size: 3em;
-            }
-
-            .btn {
-                padding: 12px 25px;
-                font-size: 1.1em;
-                box-shadow: 0 4px 0 #c0392b;
-            }
-
-            .btn:hover {
-                top: 2px;
-                box-shadow: 0 2px 0 #a93226;
-            }
-
-            .question {
-                font-size: 1.1em;
-                padding: 15px;
-                min-height: 80px;
-            }
-
-            .option-btn {
-                font-size: 0.95em;
-                padding: 12px;
-            }
-
-            .score-display {
-                font-size: 2em;
-            }
-
-            .final-message {
-                font-size: 1.1em;
-            }
-
-            .stats p {
-                font-size: 1em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .btn {
-                font-size: 1em;
-                padding: 10px 20px;
-            }
-
-            .question {
-                font-size: 1em;
-            }
-        }
+        @media (max-width: 600px) { .answers-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="game-screen">
-            <div class="pixel-corners corner-tl"></div>
-            <div class="pixel-corners corner-tr"></div>
-            <div class="pixel-corners corner-bl"></div>
-            <div class="pixel-corners corner-br"></div>
+    <div class="stars" id="stars"></div>
+    <div class="game-container">
+        <header class="header"><div class="logo">MYTHOLOGY ARENA</div></header>
 
-            <div id="startScreen" class="start-screen">
-                <h1>MYTHOLOGY ARENA</h1>
-                <p class="subtitle">Greek Gods Edition</p>
-                <div class="god-sprite">⚡</div>
-                <p style="margin: 20px 0; font-size: 1.2em;">Test your knowledge of the universe's messiest family tree!</p>
-                <p style="margin: 20px 0;">Answer 5 random questions from a pool of 15</p>
-                <button class="btn" onclick="startQuiz()">PRESS START</button>
-            </div>
-
-            <div id="quizScreen" class="quiz-screen hidden">
-                <div class="question-counter" id="questionCounter"></div>
-                <div class="god-sprite" id="godSprite">⚡</div>
-                <div class="question" id="question"></div>
-                <div class="options" id="options"></div>
-            </div>
-
-            <div id="resultScreen" class="result-screen hidden">
-                <h1>GAME OVER</h1>
-                <div class="god-sprite">🥐</div>
-                <div class="score-display" id="finalScore"></div>
-                <div class="final-message" id="finalMessage"></div>
-                <div class="stats">
-                    <p>Correct Answers: <span id="correctCount" style="color: #27ae60;"></span></p>
-                    <p>Incorrect Answers: <span id="incorrectCount" style="color: #e74c3c;"></span></p>
-                </div>
-                <button class="btn" onclick="resetQuiz()">PLAY AGAIN</button>
-            </div>
-
-            <div class="footer">
-                <a href="https://drive.proton.me/urls/NJ94PGBTXC#ViV0VxsbMOf6" target="_blank">
-                    Made with <span class="heart">❤️</span>
-                </a>
-            </div>
-            
+        <div class="screen active" id="startScreen">
+            <div class="hero-icon">⚡</div>
+            <h1 style="font-family: 'Cinzel'; text-align: center;">Greek Gods Edition</h1>
+            <p style="color: #aaa; text-align: center; margin: 1rem 0;">Test your knowledge of the universe's messiest family tree!<br>Answer 5 random questions from a pool of 15</p>
+            <button class="btn btn-primary" onclick="startGame()">PRESS START</button>
         </div>
+
+        <div class="screen" id="gameScreen">
+            <div style="width:100%; display:flex; justify-content:space-between; color:#888; font-size:0.9rem; margin-bottom:10px;">
+                <div>Question <span id="currentQ">1</span>/5</div>
+                <div>Score: <span id="scoreDisplay">0</span></div>
+            </div>
+            <div class="question-box">
+                <div id="godSprite" style="font-size: 3rem; margin-bottom: 10px;"></div>
+                <div id="questionText" style="font-size: 1.2rem; font-weight: 600;"></div>
+            </div>
+            <div class="answers-grid" id="answersGrid"></div>
+            <div id="feedbackContainer" style="display:none; width:100%;">
+                <div class="feedback-box">
+                    <div id="feedbackTitle" style="font-weight:bold; text-transform:uppercase; margin-bottom:10px;"></div>
+                    <div id="feedbackText" style="font-size:0.95rem; line-height:1.6; color:#eee;"></div>
+                    <button class="btn btn-next" onclick="nextQuestion()">CONTINUE ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="endScreen">
+            <div class="hero-icon">🥐</div>
+            <h1 style="font-family: 'Cinzel';">GAME OVER</h1>
+            <div id="finalScore" style="font-size: 3.5rem; color:#ffd700; margin: 10px 0;"></div>
+            <p id="finalMessage" style="text-align:center; padding: 0 20px; color:#3498db; font-size:1.1rem; margin-bottom:20px;"></p>
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px; width:80%; text-align:center;">
+                <p>Correct: <span id="correctCount" style="color:#27ae60"></span></p>
+                <p>Incorrect: <span id="incorrectCount" style="color:#e74c3c"></span></p>
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">PLAY AGAIN</button>
+        </div>
+
+        <footer class="footer">
+            <a href="https://drive.proton.me/urls/NJ94PGBTXC#ViV0VxsbMOf6" target="_blank">
+                Made with <span class="heart">❤️</span>
+            </a>
+        </footer>
     </div>
 
     <script>
         const questions = [
-            { q: "Which god was yeeted off Olympus by his mom for not meeting her 'beauty standards'?", opts: ["Ares the meathead", "Hephaestus the forge-dweller", "Hermes the kleptomaniac", "Dionysus the wine enthusiast"], ans: 1, sprite: "🌋" },
-
-            { q: "Which god spent nine months chilling in Zeus's thigh before being born?", opts: ["Apollo, the golden boy", "Ares, the cosmic puncher", "Hermes, the winged rat", "Dionysus, the party animal"], ans: 3, sprite: "🍷" },
-
-            { q: "Who turned Medusa into a snake-head because she dared to exist in a temple?", opts: ["Athena, the 'it' girl...or whatever", "Aphrodite, the jealous diva", "Hera, the vengeful lady of the manor", "Artemis, the 'no boys allowed' CEO"], ans: 0, sprite: "🦉" },
-
-            { q: "Which god is actually the god of war, despite losing almost every fight he's ever been in?", opts: ["Zeus, the lightning flinger", "Ares, the glorified bully", "Poseidon, the salty sea-man", "Hercules, the gym rat"], ans: 1, sprite: "🗡" },
-
-            { q: "Who offered a Trojan prince a hot girl in exchange for a 'Most Beautiful' trophy?", opts: ["Athena, the nerd", "Hera, the power-hungry queen", "Aphrodite, the chaos-bringer", "Artemis, the feral twin"], ans: 2, sprite: "🍎" },
-
-            { q: "Which goddess will literally turn you into a deer if you see her without a towel?", opts: ["Athena, the scary genius", "Hera, the judgmental Olympian housewife", "Artemis, the archery obsessed", "Hestia, the fireplace enthusiast"], ans: 2, sprite: "🦌" },
-
-            { q: "Who is the 'King of the Gods' who spend 90% of his time hiding from his wife?", opts: ["Poseidon, the three- poke-wielder", "Zeus...and his lightning bolt", "Hades, the emo brother", "Apollo, the solar lover boy"], ans: 1, sprite: "⚡" },
-
-            { q: "Which god accidentally started his career by stealing his brother's cows as an infant?", opts: ["Hermes, the baby thief", "Ares, the sword...swinger", "Dionysus, the grape juice king", "Hephaestus, the metal-head"], ans: 0, sprite: "🐄" },
-
-            { q: "Which goddess caused a global famine because her daughter went on a 'mandatory' date?", opts: ["Hera, the marriage gatekeeper", "Demeter, the dramatic gardener", "Athena, the tactical 'genius'", "Hestia, the come on baby light my fire"], ans: 1, sprite: "🌾" },
-
-            { q: "Which 'God of War' once spent 13 months trapped in a bronze jar like a forgotten pickle?",opts: ["Zeus, the lecherous sky daddy", "Ares, the glorified jar-filler", "Poseidon, the wet noodle", "Hades, the world's most stressed landlord"],  ans: 1, sprite: "🗡" },
-
-            { q: "Which god is technically the father of Pegasus  despite being, you know, a human-shaped god?", 
-  opts: ["Zeus, the pigeon lover", "Poseidon, the horse-obsessed weirdo", "Hades, the dog person", "Hermes, the winged shoe salesman"], 
-  ans: 1, 
-  sprite: "🐴" 
-},
-
-{ 
-  q: "Who is the only Olympian god who is actually 'working class' and has to build everyone's mansions?", 
-  opts: ["Ares, the gym bro", "Hephaestus, the  handyman", "Apollo, the part-time sun baby", "Dionysus, the permanent vacationer"], 
-  ans: 1, 
-  sprite: "🛠️" 
-},
-
-{ 
-  q: "Which goddess kidnapped a handsome shepherd and put him in a permanent coma just so she could look at him?", 
-  opts: ["Selene, the ultimate stage-five clinger", "Hera, the professional grudge-holder", "Aphrodite, the toxic relationship coach", "Athena, the 'I don't have feelings' girl"], 
-  ans: 0, 
-  sprite: "😴" 
-},
-
-{ 
-  q: "Who had to work a 9-to-5 as a mortal shepherd because he got grounded by Zeus for killing the Cyclopes?", 
-  opts: ["Hermes, the gig-economy god", "Poseidon, the angry wet sea god", "Apollo, the humbled pop star", "Hephaestus, the volcanic shut-in"], 
-  ans: 2, 
-  sprite: "🐑" 
-},
-
-{ 
-  q: "Which god is the reason we have 'the birds and bees talk' considering he's related to almost every hero in Greece?", 
-  opts: ["Hades, the king of social distancing", "Zeus, the man who never heard of a DNA test", "Ares, the god of punching things", "Poseidon, the horse-obsessed menace"], 
-  ans: 1, 
-  sprite: "🧬" 
-}
-              
+            { q: "Which god was yeeted off Olympus by his mom for not meeting her 'beauty standards'?", opts: ["Ares the meathead", "Hephaestus the forge-dweller", "Hermes the kleptomaniac", "Dionysus the wine enthusiast"], ans: 1, sprite: "👶", explanation: "Hephaestus the forge-dweller. Because nothing says 'mama of the year' like literally throwing your baby off a mountain because it's not Instagram worthy!" },
+            { q: "Which god spent nine months chilling in Zeus's thigh before being born?", opts: ["Apollo, the golden boy", "Ares, the cosmic puncher", "Hermes, the winged rat", "Dionysus, the party animal"], ans: 3, sprite: "🦵", explanation: "Dionysus, the party animal. Poor little guy was literally gestated in his dad's thigh like some kind of fanny pack. His mom Semele got kebabed when Hera tricked her into asking Zeus to show his true form (pro tip: don't), so Zeus just... sewed the fetus into his leg to finish cooking. After a birth story like that, you'd need a drink too." },
+            { q: "Who turned Medusa into a snake-head because she dared to exist in a temple?", opts: ["Athena, the 'it' girl...or whatever", "Aphrodite, the jealous diva", "Hera, the vengeful lady of the manor", "Artemis, the 'no boys allowed' CEO"], ans: 0, sprite: "🪼", explanation: "Athena, the 'it' girl...or whatever. The goddess of WISDOM decided the best response to Poseidon assaulting Medusa in her temple was to... punish Medusa. Ultimate brain move right there. Athena cursed the victim with snake hair and a face that turns people to stone. Then she helped Perseus murder Medusa later and wore her head as a fashion accessory on her Aegis." },
+            { q: "Which god is actually the god of war, despite losing almost every fight he's ever been in?", opts: ["Zeus, the lightning flinger", "Ares, the glorified bully", "Poseidon, the salty sea-man", "Hercules, the gym rat"], ans: 1, sprite: "🗡", explanation: "Ares, the glorified bully. Ares gets his ass handed to him by literally everyone: Athena (repeatedly), two random giants who stuffed him in a jar for 13 months, even mortals during the Trojan War. Homer described him running away crying to daddy Zeus after getting a boo-boo. Ares is the gym-bro all show no results!" },
+            { q: "Who offered a Trojan prince a hot girl in exchange for a 'Most Beautiful' trophy?", opts: ["Athena, the nerd", "Hera, the power-hungry queen", "Aphrodite, the chaos-bringer", "Artemis, the feral twin"], ans: 2, sprite: "🎁", explanation: "Aphrodite, the chaos-bringer. Three goddesses had a literal meltdown over a golden apple that said 'for the fairest,' so they dragged poor Paris into it. Hera offered power, Athena offered wisdom, but Aphrodite said 'how about the hottest woman alive?' pointing at Helen. All broadcasted live on Olympus TV!" },
+            { q: "Which goddess will literally turn you into a deer if you see her without a towel?", opts: ["Athena, the scary genius", "Hera, the judgmental Olympian housewife", "Artemis, the archery obsessed", "Hestia, the fireplace enthusiast"], ans: 2, sprite: "🦌", explanation: "Artemis, the archery obsessed. Artemis takes 'privacy violation' to a whole new level. Hunter guy named Actaeon accidentally saw her bathing (Accidentally!!!), and she turned him into a deer. Then his own dogs mauled him to death because they didn't recognize him. No warning, no 'hey buddy, I am bathing here! Shoo!' just straight to gruesome death. Artemis was really hardcore about her virginity." },
+            { q: "Who is the 'King of the Gods' who spend 90% of his time hiding from his wife?", opts: ["Poseidon, the three-poke-wielder", "Zeus...and his lightning bolt", "Hades, the emo brother", "Apollo, the solar lover boy"], ans: 1, sprite: "⚡", explanation: "Zeus...and his lightning bolt. Need we say more!?" },
+            { q: "Which god accidentally started his career by stealing his brother's cows as an infant?", opts: ["Hermes, the baby thief", "Ares, the sword...swinger", "Dionysus, the grape juice king", "Hephaestus, the metal-head"], ans: 0, sprite: "🐄", explanation: "Hermes, the baby thief. This wee mischievous baby was born in the morning and by nighttime had invented the lyre and stolen Apollo's entire cattle herd. He even made them walk backward to cover his tracks. When Apollo confronted him, baby Hermes played innocent and was like 'Me? I'm just a helpless goo-goo ga-ga 👼' then offered Apollo the lyre as a distraction. Apollo was so impressed by the audacity that he let Hermes keep the cows and gave him a little baby caduceus. Adorbs!" },
+            { q: "Which goddess caused a global famine because her daughter went on a 'mandatory' date?", opts: ["Hera, the marriage gatekeeper", "Demeter, the dramatic gardener", "Athena, the tactical 'genius'", "Hestia, the come on baby light my fire"], ans: 1, sprite: "🌾", explanation: "Demeter, the dramatic gardener. Hades kidnapped Persephone to be his wife (kidnapping always says romance!), and Demeter responded by throwing the world's longest tantrum. She was so depressed that she just... stopped doing her job. No crops, no food, humanity starving...all because her daughter moved out. Zeus had to broker a custody agreement! Now Persephone spends half the year in the underworld (winter) and half with mom (spring/summer). In autumn she probably goes for piña coladas!" },
+            { q: "Which 'God of War' once spent 13 months trapped in a bronze jar like a forgotten pickle?", opts: ["Zeus, the lecherous sky daddy", "Ares, the glorified jar-filler", "Poseidon, the wet noodle", "Hades, the world's most stressed landlord"], ans: 1, sprite: "🥒", explanation: "Ares, the glorified jar-filler. The God of War got jumped by two nine-year-old giants, Otus and Ephialtes (sons of Poseidon), and stuffed into a bronze jar for thirteen months. He would've died if Hermes hadn't rescued him. When they finally let him out, he could barely move... like a soggy little pickle." },
+            { q: "Which god is technically the father of Pegasus despite being, you know, a human-shaped god?", opts: ["Zeus, the pigeon lover", "Poseidon, the horse-obsessed weirdo", "Hades, the dog person", "Hermes, the winged shoe salesman"], ans: 1, sprite: "🐴", explanation: "Poseidon, the horse-obsessed weirdo. So Poseidon assaulted Medusa (classy), she got cursed into a gorgon (thanks Athena), then when Perseus decapitated her and... Pegasus just sprouted from her neck. Because that's how horse biology works. Poseidon was obsessed with horses, like a whole horse fetish and nobody dares to unpack that!" },
+            { q: "Who is the only Olympian god who is actually 'working class' and has to build everyone's mansions?", opts: ["Ares, the gym bro", "Hephaestus, the handyman", "Apollo, the part-time sun baby", "Dionysus, the permanent vacationer"], ans: 1, sprite: "🛠️", explanation: "Hephaestus, the handyman. While the other gods were out here causing messes, Hephaestus was in his workshop doing actual work. He made Zeus's lightning bolts, Athena's armor, Achilles' shield. Basically every cool thing in Greek mythology. He even built robot servants to help him (Ancient Greece's first AI). Hephaestus: disabled but indispensable. Know your worth, king." },
+            { q: "Which goddess kidnapped a handsome shepherd and put him in a permanent coma just so she could look at him?", opts: ["Selene, the ultimate stage-five clinger", "Hera, the professional grudge-holder", "Aphrodite, the toxic relationship coach", "Athena, the 'I don't have feelings' girl"], ans: 0, sprite: "😴", explanation: "Selene, the ultimate stage-five clinger. Selene saw hot shepherd Endymion and thought 'I need dat ass, but like, forever.' So she asked Zeus to put him in an eternal coma so he'd stay young and pretty and never leave her. Zeus said 'This seems normal!' and now this man has been unconscious in a cave for millennia while Selene visits every night to stare at him and not only..." },
+            { q: "Who had to work a 9-to-5 as a mortal shepherd because he got grounded by Zeus for killing the Cyclopes?", opts: ["Hermes, the gig-economy god", "Poseidon, the angry wet sea god", "Apollo, the humbled pop star", "Hephaestus, the volcanic shut-in"], ans: 2, sprite: "🎻", explanation: "Apollo, the humbled pop star. Mr. Perfect: god of music, poetry, prophecy, and the sun killed the Cyclopes -who made Zeus' thunderbolt- for revenge because...ahem... Zeus zapped his son Asclepios. So Zeus gave him the divine equivalent of community service. Stripped his powers and made him work as a shepherd for a mortal king. From driving the sun chariot across the sky to scooping sheep poop..." },
+            { q: "Which god is the reason we have 'the birds and bees talk' considering he's related to almost every hero in Greece?", opts: ["Hades, the king of social distancing", "Zeus, the man who never heard of a DNA test", "Ares, the god of punching things", "Poseidon, the horse-obsessed menace"], ans: 1, sprite: "🧬", explanation: "Zeus, the man who never heard of a DNA test. This man is on everyone's family tree. Hercules, Perseus, Helen of Troy...list is just too long!" }
         ];
 
-        let currentQuestions = [];
-        let currentQuestion = 0;
+        let quizQ = [];
+        let currentIdx = 0;
         let score = 0;
-        let answered = false;
 
-        function shuffleArray(arr) {
-            const shuffled = [...arr];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        function startQuiz() {
-            currentQuestions = shuffleArray(questions).slice(0, 5);
-            currentQuestion = 0;
+        function startGame() {
+            quizQ = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+            currentIdx = 0;
             score = 0;
-            answered = false;
-            
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('quizScreen').classList.remove('hidden');
-            document.getElementById('resultScreen').classList.add('hidden');
-            
-            showQuestion();
+            showScreen('gameScreen');
+            loadQ();
         }
 
-        function showQuestion() {
-            answered = false;
-            const q = currentQuestions[currentQuestion];
-            
-            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1} of 5`;
+        function loadQ() {
+            const q = quizQ[currentIdx];
+            document.getElementById('currentQ').textContent = currentIdx + 1;
+            document.getElementById('scoreDisplay').textContent = score;
             document.getElementById('godSprite').textContent = q.sprite;
-            document.getElementById('question').textContent = q.q;
-            
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
-            
-            q.opts.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.textContent = opt;
-                btn.className = 'btn option-btn';
-                btn.onclick = () => checkAnswer(idx);
-                optionsDiv.appendChild(btn);
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('feedbackContainer').style.display = 'none';
+            const grid = document.getElementById('answersGrid');
+            grid.innerHTML = '';
+            q.opts.forEach((o, i) => {
+                const b = document.createElement('button');
+                b.className = 'answer-btn';
+                b.textContent = o;
+                b.onclick = () => select(i);
+                grid.appendChild(b);
             });
         }
 
-        function checkAnswer(selected) {
-            if (answered) return;
-            answered = true;
-            
-            const q = currentQuestions[currentQuestion];
-            const buttons = document.querySelectorAll('.option-btn');
-            
-            buttons.forEach((btn, idx) => {
-                btn.disabled = true;
-                if (idx === q.ans) {
-                    btn.classList.add('correct');
-                } else if (idx === selected) {
-                    btn.classList.add('incorrect');
-                }
+        function select(idx) {
+            const q = quizQ[currentIdx];
+            const btns = document.querySelectorAll('.answer-btn');
+            btns.forEach((b, i) => {
+                b.disabled = true;
+                if (i === q.ans) b.classList.add('correct');
+                else if (i === idx) b.classList.add('wrong');
             });
-            
-            if (selected === q.ans) {
-                score++;
-            }
-            
-            setTimeout(() => {
-                currentQuestion++;
-                if (currentQuestion < currentQuestions.length) {
-                    showQuestion();
-                } else {
-                    showResults();
-                }
-            }, 1500);
+            if (idx === q.ans) score++;
+            document.getElementById('feedbackTitle').textContent = (idx === q.ans) ? "✓ Correct!" : "✗ Not Quite!";
+            document.getElementById('feedbackTitle').style.color = (idx === q.ans) ? "#27ae60" : "#e74c3c";
+            document.getElementById('feedbackText').textContent = q.explanation;
+            document.getElementById('feedbackContainer').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < 5) loadQ();
+            else showResults();
         }
 
         function showResults() {
-            document.getElementById('quizScreen').classList.add('hidden');
-            document.getElementById('resultScreen').classList.remove('hidden');
-            
-            const percentage = (score / 5) * 100;
+            showScreen('endScreen');
+            const perc = (score / 5) * 100;
             document.getElementById('finalScore').textContent = `${score} / 5`;
             document.getElementById('correctCount').textContent = score;
             document.getElementById('incorrectCount').textContent = 5 - score;
-            
-            let message = '';
-            if (percentage === 100) {
-                message = "LEGENDARY! You clearly spent your childhood reading scrolls while the rest of us were playing outside.";
-            } else if (percentage >= 80) {
-                message = "EXCELLENT! You've got more brains than Athena!";
-            } else if (percentage >= 60) {
-                message = "GOOD! You're the Hermes of this quiz: fast, and a tad suspicious!";
-            } else if (percentage >= 40) {
-                message = "OOF. Did you offend a goddess this morning?";
-            } else {
-                message = "FATAL ERROR. You've been struck by Zeus' mini-bolt!";
-            }
-            
-            document.getElementById('finalMessage').textContent = message;
+            let msg = "";
+            if (perc === 100) msg = "LEGENDARY! You clearly spent your childhood reading scrolls while the rest of us were playing outside.";
+            else if (perc >= 80) msg = "EXCELLENT! You've got more brains than Athena!";
+            else if (perc >= 60) msg = "GOOD! You're the Hermes of this quiz: fast, and a tad suspicious!";
+            else if (perc >= 40) msg = "OOF. Did you offend a goddess this morning?";
+            else msg = "FATAL ERROR. You've been struck by Zeus' mini-bolt!";
+            document.getElementById('finalMessage').textContent = msg;
         }
 
-        function resetQuiz() {
-            document.getElementById('resultScreen').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
+
+        function createStars() {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 80; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.width = (Math.random() * 2 + 1) + 'px';
+                s.style.height = s.style.width;
+                s.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(s);
+            }
+        }
+        createStars();
     </script>
-</body>
-</html>
+</body></html>
